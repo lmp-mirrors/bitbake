@@ -239,18 +239,18 @@ exit 1
             raise Exception("Source {} contains both git-remote and local properties.".format(r_name))
 
         repodir_path = os.path.join(layerdir, repodir)
-    #    if os.path.lexists(repodir_path):
-    #        if os.path.islink(repodir_path):
-    #            os.remove(repodir_path)
-    #        elif _has_local_modifications(r_name, repodir_path):
-    #            backup_path = add_unique_timestamp_to_path(repodir_path + '-backup')
-    #            logger.warning("""Source {} in {} contains local modifications. Renaming to {} to preserve them.
-#For local development work it is recommended to clone the needed layers separately and re-initialize using -L option:
-#bitbake-setup init -L {} /path/to/repo/checkout""".format(
-    #                r_name, repodir_path, backup_path, r_name))
-    #            os.rename(repodir_path, backup_path)
-    #        else:
-    #            shutil.rmtree(repodir_path)
+        if os.path.lexists(repodir_path):
+            if os.path.islink(repodir_path):
+                os.remove(repodir_path)
+            elif _has_local_modifications(r_name, repodir_path):
+                backup_path = add_unique_timestamp_to_path(repodir_path + '-backup')
+                logger.warning("""Source {} in {} contains local modifications. Renaming to {} to preserve them.
+For local development work it is recommended to clone the needed layers separately and re-initialize using -L option:
+bitbake-setup init -L {} /path/to/repo/checkout""".format(
+                    r_name, repodir_path, backup_path, r_name))
+                os.rename(repodir_path, backup_path)
+            else:
+                shutil.rmtree(repodir_path)
 
         if r_remote:
             _checkout_git_remote(r_remote, repodir, layers_fixed_revisions)
@@ -830,7 +830,7 @@ def do_fetch(fetcher, dir):
         oldstdout = sys.stdout
         sys.stdout = f
         fetcher.download()
-        fetcher.unpack_update(dir)
+        fetcher.unpack(dir)
         sys.stdout = oldstdout
 
 def update_registry(registry, cachedir, d):
